@@ -42,7 +42,7 @@ Script for ADCP CODAS data viewer.
 
    dataviewer.py path/to/cruiseID/sonar -n 3 -t sonar
    dataviewer.py -c path/to/sonar1 path/to/sonar2
-
+HISTORY:  -revised Jan 15 2015, by Diana Cardoso (DC) (Bedford Institute of Oceanography, NS,Canada) for user defined start time
 """
 import sys, os
 
@@ -112,7 +112,11 @@ def get_dbinfo(dbpath):
 
 def main(arglist = None):
     parser = OptionParser(__doc__)
-
+#EDIT Jan15, 2014: DC ****START
+    parser.add_option("-d", "--start", dest="ddaystart",
+                                help="start (days) to view in panels",
+                                default=None)
+#EDIT Jan15, 2014: DC ****End                                
     parser.add_option("-s", "--step", dest="ddaystep",
                                 help="duration (days) to view in panels",
                                 default=None)
@@ -183,7 +187,12 @@ def main(arglist = None):
         numaxes = 4
         if mode == 'compare':
             numaxes = 6
-
+#EDIT Jan15, 2014: DC ****START
+    if options.ddaystart is None:
+        ddaystart = 999
+    else:
+        ddaystart = float(options.ddaystart)
+#EDIT Jan15, 2014: DC ****END       
     if options.ddaystep is None:
         ddaystep = 0.8
     else:
@@ -223,8 +232,8 @@ def main(arglist = None):
 
     modemod = "pycurrents.adcpgui." + mode
     mod = __import__(modemod, fromlist=['GuiApp'])
-    gg = mod.GuiApp(numaxes, db_params, ddaystep, plot_title, 
-                    set_bad=set_bad, delta_t=int(options.minutes)/(24*60.))
+    gg = mod.GuiApp(numaxes, db_params, ddaystep, ddaystart, plot_title, 
+                    set_bad=set_bad, delta_t=int(options.minutes)/(24*60.)) #EDIT Jan15, 2014: DC, added ddaystart 
     return gg
 
 if __name__ == '__main__':
